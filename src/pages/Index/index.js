@@ -4,19 +4,19 @@
  * @Autor: Seven
  * @Date: 2021-05-26 13:45:34
  * @LastEditors: Seven
- * @LastEditTime: 2021-05-29 18:14:16
+ * @LastEditTime: 2021-05-29 21:58:40
  */
 
 import React from 'react'
 //导入组件走马灯 WingBlank两仪留白
-import {Carousel,Flex} from 'antd-mobile'
+import {Carousel,Flex,Grid} from 'antd-mobile'
 import axios from 'axios'
 import Nav1 from '../../assets/images/nav-1.png'
 import Nav2 from '../../assets/images/nav-2.png'
 import Nav3 from '../../assets/images/nav-3.png'
 import Nav4 from '../../assets/images/nav-4.png'
-// import './index.css'
-import './index.scss'
+import './index.css'
+// import './index.scss'
 // import './index.styl'
 //封装nav
 const navs=[
@@ -44,7 +44,9 @@ const navs=[
     title:'去出租',
     path:'/home/list'
   }
-]
+];
+//Grid data
+
 export default class Index extends React.Component{
   state = {
     swipers:[],
@@ -56,7 +58,21 @@ export default class Index extends React.Component{
     const res=await axios.get('http://localhost:8080/home/swiper')
     this.setState({
       swipers:res.data.body,
-      isSwiperLoaded:true
+      isSwiperLoaded:true,
+
+      //租房小组的状态
+      groups:[]
+    })
+  }
+  //获取租房小组数据
+  async getGroups(){
+    const res=await axios.get('http://localhost:8080/home/groups',{
+      params:{
+        area:"AREA|88cff55c-aaa4-e2e0",
+      }
+    })
+    this.setState({
+      groups:res.data.body
     })
   }
   //渲染轮播
@@ -91,8 +107,21 @@ export default class Index extends React.Component{
       )
     })
   }
+  //抽离 租房小组
+  renderGroups(item){
+    return(
+      <Flex className='group-item' justify='around' key={item.id}>
+        <div className='desc'>
+          <p className='title'>{item.title}</p>
+          <span className='info'>{item.desc}</span>
+        </div>
+        <img src={`http://localhost:8080${item.imgSrc}`} alt=''></img>
+      </Flex>
+    )
+  }
   componentDidMount() {
     this.getSwipers()
+    this.getGroups()
   }
   render() {
     return (
@@ -113,6 +142,21 @@ export default class Index extends React.Component{
         <Flex className='nav'>
           {this.renderNavs()}
         </Flex>
+
+        <div className='group'>
+          <h3 className='group-title'>
+            租房小组
+            <span className='more'>更多</span>
+          </h3>
+          <Grid data={this.state.groups} 
+          columnNum={2}
+          square={false}
+          hasLine={false}
+          renderItem={item=>(
+            this.renderGroups(item)
+          )}
+          />
+        </div>
 
       </div>
 
