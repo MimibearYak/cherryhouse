@@ -4,7 +4,7 @@
  * @Autor: Seven
  * @Date: 2021-05-25 14:42:24
  * @LastEditors: Seven
- * @LastEditTime: 2021-05-26 15:13:53
+ * @LastEditTime: 2021-05-29 14:44:00
  */
 import React from 'react'
 import {Route} from 'react-router-dom'
@@ -19,7 +19,7 @@ const tabItems=[
   {
     title:'首页',
     icon:'icon-ind',
-    path:'/home/index'
+    path:'/home'
   },
   {
     title:'找房',
@@ -42,6 +42,14 @@ export default class Home extends React.Component{
   state = {
     selectedTab: this.props.location.pathname,
   };
+  //当Home组件的内容发生更新的时候去调用
+  componentDidUpdate(prevProps){
+    if(prevProps.location.pathname!==this.props.location.pathname){
+      this.setState({
+        selectedTab:this.props.location.pathname   
+      })
+    }
+  }
 
   renderTabBarItem(){
     return tabItems.map((item)=>(
