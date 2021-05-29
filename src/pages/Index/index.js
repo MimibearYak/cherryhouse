@@ -4,7 +4,7 @@
  * @Autor: Seven
  * @Date: 2021-05-26 13:45:34
  * @LastEditors: Seven
- * @LastEditTime: 2021-05-29 18:14:16
+ * @LastEditTime: 2021-05-29 20:45:09
  */
 
 import React from 'react'
@@ -50,6 +50,7 @@ export default class Index extends React.Component{
     swipers:[],
     isSwiperLoaded:false,
     
+    // 租房小组状态
   }
   //获取轮播数据
   async getSwipers(){
