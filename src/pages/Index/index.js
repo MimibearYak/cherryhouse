@@ -4,7 +4,7 @@
  * @Autor: Seven
  * @Date: 2021-05-26 13:45:34
  * @LastEditors: Seven
- * @LastEditTime: 2021-05-29 15:18:27
+ * @LastEditTime: 2021-05-29 18:14:16
  */
 
 import React from 'react'
@@ -16,8 +16,8 @@ import Nav2 from '../../assets/images/nav-2.png'
 import Nav3 from '../../assets/images/nav-3.png'
 import Nav4 from '../../assets/images/nav-4.png'
 // import './index.css'
-// import './index.scss'
-import './index.styl'
+import './index.scss'
+// import './index.styl'
 //封装nav
 const navs=[
   {
