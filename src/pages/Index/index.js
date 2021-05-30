@@ -4,7 +4,7 @@
  * @Autor: Seven
  * @Date: 2021-05-26 13:45:34
  * @LastEditors: Seven
- * @LastEditTime: 2021-05-30 13:18:53
+ * @LastEditTime: 2021-05-30 17:52:37
  */
 
 import React from 'react'
@@ -45,6 +45,10 @@ const navs=[
     path:'/home/list'
   }
 ];
+//获取地理位置信息
+navigator.geolocation.getCurrentPosition(position=> {
+  console.log(position) 
+});
 //Grid data
 
 export default class Index extends React.Component{
@@ -56,7 +60,7 @@ export default class Index extends React.Component{
     //最新咨询数据
     news:[],
     //search area
-    curCityName:'长沙'
+    curCityName:''
   }
   //获取轮播数据
   async getSwipers(){
@@ -86,11 +90,12 @@ export default class Index extends React.Component{
         area:"AREA|88cff55c-aaa4-e2e0"
       }
     })
-    console.log(res)
+    // console.log(res)
     this.setState({
       news:res.data.body
     })
   }
+  
   //渲染轮播
   renderSwipers(){
     return this.state.swipers.map(item=>(
@@ -159,6 +164,15 @@ export default class Index extends React.Component{
     this.getSwipers()
     this.getGroups()
     this.getNews()
+    
+    //通过ip定位获取当前城市名称
+    const curCity=new window.BMapGL.LocalCity()
+    curCity.get(async(res)=>{
+      const result=await axios.get(`http://localhost:8080/area/info?name=${res.name}`)
+      this.setState({
+        curCityName:result.data.body.label
+      })
+    })
   }
   render() {
     return (
@@ -174,6 +188,7 @@ export default class Index extends React.Component{
               {this.renderSwipers()}
             </Carousel>
           ):('')}
+          
           <Flex className='search-box'>
             <Flex className='search'>
               <div className='location'
@@ -193,6 +208,7 @@ export default class Index extends React.Component{
             onClick={()=>this.props.history.push('/map')}
             ></i>
           </Flex>
+
         </div>
 
         
