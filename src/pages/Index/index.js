@@ -4,11 +4,8 @@
  * @Autor: Seven
  * @Date: 2021-05-26 13:45:34
  * @LastEditors: Seven
-<<<<<<< HEAD
- * @LastEditTime: 2021-05-30 18:38:54
-=======
+ * @LastEditTime: 2021-05-30 18:43:26
  * @LastEditTime: 2021-05-30 17:52:37
->>>>>>> mimi
  */
 
 import React from 'react'
@@ -66,7 +63,7 @@ export default class Index extends React.Component{
     news:[],
     //search area
     curCityName:''
-
+  }
   //获取轮播数据
   async getSwipers(){
     const res=await axios.get('http://localhost:8080/home/swiper')
