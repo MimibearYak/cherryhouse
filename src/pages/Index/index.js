@@ -4,12 +4,12 @@
  * @Autor: Seven
  * @Date: 2021-05-26 13:45:34
  * @LastEditors: Seven
- * @LastEditTime: 2021-05-29 21:58:40
+ * @LastEditTime: 2021-05-30 13:18:53
  */
 
 import React from 'react'
 //导入组件走马灯 WingBlank两仪留白
-import {Carousel,Flex,Grid} from 'antd-mobile'
+import {Carousel,Flex,Grid,WingBlank} from 'antd-mobile'
 import axios from 'axios'
 import Nav1 from '../../assets/images/nav-1.png'
 import Nav2 from '../../assets/images/nav-2.png'
@@ -51,7 +51,12 @@ export default class Index extends React.Component{
   state = {
     swipers:[],
     isSwiperLoaded:false,
-    
+    //租房小组的状态
+    groups:[],
+    //最新咨询数据
+    news:[],
+    //search area
+    curCityName:'长沙'
   }
   //获取轮播数据
   async getSwipers(){
@@ -60,8 +65,7 @@ export default class Index extends React.Component{
       swipers:res.data.body,
       isSwiperLoaded:true,
 
-      //租房小组的状态
-      groups:[]
+      
     })
   }
   //获取租房小组数据
@@ -73,6 +77,18 @@ export default class Index extends React.Component{
     })
     this.setState({
       groups:res.data.body
+    })
+  }
+  //news data
+  async getNews(){
+    const res=await axios.get('http://localhost:8080/home/news',{
+      params:{
+        area:"AREA|88cff55c-aaa4-e2e0"
+      }
+    })
+    console.log(res)
+    this.setState({
+      news:res.data.body
     })
   }
   //渲染轮播
@@ -119,13 +135,35 @@ export default class Index extends React.Component{
       </Flex>
     )
   }
+  //news render fc
+  renderNews(){
+    return this.state.news.map(item=>{
+      return(
+        <div className='news-item' key={item.key}>
+          <div className='imgWrap'>
+            <img className='img'
+            src={`http://localhost:8080${item.imgSrc}`} alt=''/>
+          </div>
+          <Flex className='content' direction='column' justify='between'>
+            <h3 className='title'>{item.title}</h3>
+            <Flex className='info' justify='between'>
+              <span>{item.from}</span>
+              <span>{item.date}</span>
+            </Flex>
+          </Flex>
+        </div>
+      )
+    })
+  }
   componentDidMount() {
     this.getSwipers()
     this.getGroups()
+    this.getNews()
   }
   render() {
     return (
       <div className='index'>
+        
         <div className='swiper'>
           {this.state.isSwiperLoaded ? (
             <Carousel
@@ -136,6 +174,25 @@ export default class Index extends React.Component{
               {this.renderSwipers()}
             </Carousel>
           ):('')}
+          <Flex className='search-box'>
+            <Flex className='search'>
+              <div className='location'
+              onClick={()=>this.props.history.push('/citylist')}>
+                <span className='name'>{this.state.curCityName}</span>
+                <i className='iconfont icon-arrow'></i>
+              </div>
+              <div className='form'
+              onClick={()=>this.props.history.push('/search')}
+              >
+                <i className='iconfont icon-seach'>
+                  <span className='text'>请输入小区或地址</span>
+                </i>
+              </div>
+            </Flex>
+            <i className='iconfont icon-map'
+            onClick={()=>this.props.history.push('/map')}
+            ></i>
+          </Flex>
         </div>
 
         
@@ -156,6 +213,13 @@ export default class Index extends React.Component{
             this.renderGroups(item)
           )}
           />
+        </div>
+
+        <div className='news'>
+          <h3 className='group-title'>最新资讯</h3>
+          <WingBlank size='md'>
+            {this.renderNews()}
+          </WingBlank>
         </div>
 
       </div>
