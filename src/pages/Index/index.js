@@ -4,7 +4,7 @@
  * @Autor: Seven
  * @Date: 2021-05-26 13:45:34
  * @LastEditors: Seven
- * @LastEditTime: 2021-05-30 18:43:26
+ * @LastEditTime: 2021-06-06 16:09:05
  * @LastEditTime: 2021-05-30 17:52:37
  */
 
@@ -12,6 +12,7 @@ import React from 'react'
 //导入组件走马灯 WingBlank两仪留白
 import {Carousel,Flex,Grid,WingBlank} from 'antd-mobile'
 import axios from 'axios'
+import {getCurrentCity} from '../../utils'
 import Nav1 from '../../assets/images/nav-1.png'
 import Nav2 from '../../assets/images/nav-2.png'
 import Nav3 from '../../assets/images/nav-3.png'
@@ -162,18 +163,15 @@ export default class Index extends React.Component{
       )
     })
   }
-  componentDidMount() {
+  async componentDidMount() {
     this.getSwipers()
     this.getGroups()
     this.getNews()
     
-    //通过ip定位获取当前城市名称
-    const curCity=new window.BMapGL.LocalCity()
-    curCity.get(async(res)=>{
-      const result=await axios.get(`http://localhost:8080/area/info?name=${res.name}`)
-      this.setState({
-        curCityName:result.data.body.label
-      })
+    // //通过ip定位获取当前城市名称
+    const curCity =await getCurrentCity()
+    this.setState({
+      curCityName:curCity.label
     })
   }
   render() {

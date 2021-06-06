@@ -4,11 +4,12 @@
  * @Autor: Seven
  * @Date: 2021-05-25 14:42:44
  * @LastEditors: Seven
- * @LastEditTime: 2021-05-30 18:31:59
+ * @LastEditTime: 2021-06-06 16:36:39
  */
 import React from 'react'
 import axios from 'axios'
 import { NavBar, Icon } from 'antd-mobile';
+import {getCurrentCity} from  '../../utils/'
 import './index.css'
 
 //数据格式化fc
@@ -36,7 +37,15 @@ export default class CityList extends React.Component{
     const res =await axios.get('http://localhost:8080/area/city?level=1')
     console.log(res)
     const {cityList,cityIndex}=formatCityList(res.data.body)
-    console.log(cityList,cityIndex)
+    const hotRes=await axios.get('http://localhost:8080/area/hot')
+    cityList['hot']=hotRes.data.body
+    cityIndex.unshift('hot')
+    
+    //获取当前定位城市信息
+    const curCity=await getCurrentCity();
+    cityList['#']={curCity}
+    cityIndex.unshift('#')
+    console.log(cityList,cityIndex,curCity)
   }
   componentDidMount(){
     this.getCityList()
