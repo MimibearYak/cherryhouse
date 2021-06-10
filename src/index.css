@@ -9,8 +9,11 @@ html,body{
 *{
   box-sizing: border-box;
 }
-h2{
+h2,h3,ul,p{
   margin: 0;
+}
+ul{
+  list-style: none;
 }
 html,body,#root,.App{
   height: 100%;

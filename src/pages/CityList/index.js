@@ -4,13 +4,14 @@
  * @Autor: Seven
  * @Date: 2021-05-25 14:42:44
  * @LastEditors: Seven
- * @LastEditTime: 2021-06-08 18:41:49
+ * @LastEditTime: 2021-06-10 22:05:40
  */
 import React from 'react'
 import axios from 'axios'
-import { NavBar, Icon } from 'antd-mobile';
+import {Toast } from 'antd-mobile';
 import {getCurrentCity} from  '../../utils/'
 import {List,AutoSizer} from 'react-virtualized'
+import NavHeader from '../../components/NavHeader'
 import './index.css'
 
 //数据格式化fc
@@ -45,13 +46,20 @@ const formatCityIndex=(letter)=>{
 }
 const TITLE_HEIGHT=36;
 const NAME_HEIGHT=50;
+const HOUSE_CITY=['北京','上海','广州','深圳']
 
 export default class CityList extends React.Component{
+  constructor(props){
+    super(props)
+    this.state={
+      cityList:{},
+      cityIndex:[],
+      activeIndex:0,
+    }
+    this.citylistComponent=React.createRef()
+  }
 
-state={
-  cityList:{},
-  cityIndex:[]
-}
+
   
   async getCityList(){
     const res =await axios.get('http://localhost:8080/area/city?level=1')
@@ -76,6 +84,24 @@ state={
     const {cityList,cityIndex}=this.state
     return TITLE_HEIGHT+cityList[cityIndex[index]].length*NAME_HEIGHT
   }
+  //right index fc
+  renderCityIndex(){
+    const {cityIndex,activeIndex}=this.state
+    return cityIndex.map((item,index)=>(
+      <li className='city-index-item' key={item}
+        onClick={()=>{
+          //组件滚动指定位置
+          this.citylistComponent.current.scrollToRow(index)
+        }}
+      >
+        <span 
+        className={activeIndex===index? 'index-active':''}
+        >
+          {item==='hot'?'热':item.toUpperCase()}
+        </span>
+      </li>
+    ))
+  }
   
   rowRenderer=({
     key,
@@ -92,41 +118,58 @@ state={
         <div className='title'>{formatCityIndex(letter)}</div>
         {
          cityList[letter].map((item)=>(
-            <div className='name' key={item.value}>{item.label}</div>
+            <div className='name' key={item.value}
+            onClick={()=>this.changeCity(item)}
+            >{item.label}</div>
           ))
         }
       </div>
     )
   }
-
-  componentDidMount(){
-    this.getCityList()
+  onRowsRendered=({startIndex})=>{
+    if(this.state.activeIndex!==startIndex){
+      this.setState({
+        activeIndex:startIndex
+      })
+    }
+  }
+  changeCity({label,value}){
+    if(HOUSE_CITY.indexOf(label)>-1){
+      localStorage.setItem('ytzf_city',JSON.stringify({label,value}))
+      this.props.history.go(-1)
+    }else{
+      Toast.info('该城市暂无房源数据',2,null,false)
+    }
+  }
+  async componentDidMount(){
+    await this.getCityList()
+    this.citylistComponent.current.measureAllRows();//提前计算组件高度
   }
   render(){
     return (
       <div className='citylist'>
-        <NavBar
-        className='navbar'
-        mode="light"
-        icon={<i className='iconfont icon-back'></i>}
-        onLeftClick={() =>this.props.history.go(-1)}
-
-        >
+        <NavHeader>
           城市选择
-        </NavBar>
+        </NavHeader>
         <AutoSizer>
           {({height,width})=>(
             <List 
+            ref={this.citylistComponent}
             width={width}
             height={height}
             rowCount={this.state.cityIndex.length}
             rowHeight={this.getRowHeight}
             rowRenderer={this.rowRenderer}
+            onRowsRendered={this.onRowsRendered}
+            scrollToAlignment='start'//准确点击li
             >
             </List>
           )}
         </AutoSizer>
 
+        <ul className='city-index'>
+          {this.renderCityIndex()}
+        </ul>
       </div>
     )
   }
